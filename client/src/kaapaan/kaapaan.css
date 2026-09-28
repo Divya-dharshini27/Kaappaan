@@ -1,0 +1,908 @@
+/* ======================================================
+   AMBULANCE ALERT SYSTEM (KAAPAAN) - MODERN DESIGN SYSTEM
+   ====================================================== */
+
+.kaapaan-scope {
+  --primary: #c62828;
+  --primary-hover: #b71c1c;
+  --primary-light: #ffebee;
+  --secondary: #1565c0;
+  --secondary-hover: #0d47a1;
+  --accent: #6a1b9a;
+  --accent-hover: #4a148c;
+  --success: #2e7d32;
+  --success-light: #e8f5e9;
+  --warning: #f57c00;
+  --warning-light: #fff3e0;
+  --danger: #d32f2f;
+  --surface: #ffffff;
+  --surface-subtle: #f8fafc;
+  --background: #f1f5f9;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border: #e2e8f0;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.05);
+
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--background);
+  color: var(--text-main);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  min-height: calc(100vh - 44px);
+}
+
+.kaapaan-scope *,
+.kaapaan-scope *::before,
+.kaapaan-scope *::after {
+  box-sizing: border-box;
+}
+
+/* ======================================================
+   HEADER & CONNECTIVITY STRIP
+   ====================================================== */
+
+.kaapaan-scope .app-header {
+  background: linear-gradient(135deg, #b71c1c 0%, #c62828 50%, #e53935 100%);
+  color: white;
+  box-shadow: var(--shadow-md);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.kaapaan-scope .header-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 14px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.kaapaan-scope .header-branding {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.kaapaan-scope .header-icon {
+  font-size: 32px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.kaapaan-scope .header-branding h1 {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.kaapaan-scope .subtitle-text {
+  font-size: 12px;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+/* SYNC STATUS STRIP */
+.kaapaan-scope .sync-status-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.kaapaan-scope .sync-pill {
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.kaapaan-scope .sync-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.kaapaan-scope .sync-dot.green {
+  background: #00e676;
+  box-shadow: 0 0 8px #00e676;
+}
+
+.kaapaan-scope .sync-dot.yellow {
+  background: #ffd600;
+  box-shadow: 0 0 8px #ffd600;
+  animation: kaapaanPulse 1s infinite;
+}
+
+.kaapaan-scope .sync-dot.red {
+  background: #ff5252;
+}
+
+.kaapaan-scope .room-pill {
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.kaapaan-scope .room-pill:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.kaapaan-scope .telemetry-stat {
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+  background: rgba(0,0,0,0.3);
+  padding: 5px 8px;
+  border-radius: 6px;
+  opacity: 0.95;
+}
+
+/* ======================================================
+   MAIN CONTAINER & CARDS
+   ====================================================== */
+
+.kaapaan-scope .main-container {
+  max-width: 1100px;
+  margin: 20px auto;
+  padding: 0 16px 40px;
+}
+
+.kaapaan-scope .card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 22px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  transition: box-shadow 0.2s;
+}
+
+.kaapaan-scope .card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.kaapaan-scope .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.kaapaan-scope .card-header.border-bottom {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 14px;
+}
+
+.kaapaan-scope .card-header h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.kaapaan-scope .step-tag {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  background: var(--surface-subtle);
+  color: var(--text-muted);
+  padding: 4px 10px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.kaapaan-scope .panel-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.kaapaan-scope .panel-icon {
+  font-size: 24px;
+}
+
+/* ======================================================
+   MODE SELECTION BUTTONS
+   ====================================================== */
+
+.kaapaan-scope .mode-buttons-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.kaapaan-scope .mode-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border);
+  background: var(--surface-subtle);
+  color: var(--text-main);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.kaapaan-scope .mode-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: #cbd5e1;
+}
+
+.kaapaan-scope .mode-btn-icon {
+  font-size: 30px;
+}
+
+.kaapaan-scope .mode-btn-content strong {
+  display: block;
+  font-size: 15px;
+  margin-bottom: 2px;
+}
+
+.kaapaan-scope .mode-btn-content span {
+  display: block;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.kaapaan-scope .ambulance-mode-btn.active,
+.kaapaan-scope .ambulance-mode-btn:focus {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+
+.kaapaan-scope .traffic-mode-btn.active,
+.kaapaan-scope .traffic-mode-btn:focus {
+  border-color: var(--secondary);
+  background: #e3f2fd;
+}
+
+.kaapaan-scope .current-mode-indicator {
+  margin-top: 14px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-subtle);
+  border-left: 4px solid var(--secondary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ======================================================
+   BUTTONS & FORM ELEMENTS
+   ====================================================== */
+
+.kaapaan-scope button {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.kaapaan-scope .btn-action {
+  padding: 12px 18px;
+  font-size: 14px;
+  border-radius: var(--radius-md);
+}
+
+.kaapaan-scope .btn-sm {
+  padding: 7px 14px;
+  font-size: 12px;
+  border-radius: var(--radius-sm);
+}
+
+.kaapaan-scope .btn-xs {
+  padding: 5px 10px;
+  font-size: 12px;
+  border-radius: var(--radius-sm);
+}
+
+.kaapaan-scope .btn-primary {
+  background: var(--secondary);
+  color: white;
+}
+.kaapaan-scope .btn-primary:hover { background: var(--secondary-hover); }
+
+.kaapaan-scope .btn-success {
+  background: var(--success);
+  color: white;
+}
+.kaapaan-scope .btn-success:hover { background: #1b5e20; }
+
+.kaapaan-scope .btn-danger {
+  background: var(--danger);
+  color: white;
+}
+.kaapaan-scope .btn-danger:hover { background: #b71c1c; }
+
+.kaapaan-scope .btn-secondary {
+  background: var(--surface-subtle);
+  color: var(--text-main);
+  border: 1px solid var(--border);
+}
+.kaapaan-scope .btn-secondary:hover { background: #e2e8f0; }
+
+.kaapaan-scope .btn-accent {
+  background: var(--accent);
+  color: white;
+}
+.kaapaan-scope .btn-accent:hover { background: var(--accent-hover); }
+
+.kaapaan-scope .btn-outline {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-main);
+}
+.kaapaan-scope .btn-outline:hover { background: var(--surface-subtle); }
+
+.kaapaan-scope button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* FORM CONTROLS */
+.kaapaan-scope .form-row-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.kaapaan-scope .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.kaapaan-scope .form-group label {
+  font-size: 13px;
+  color: var(--text-main);
+}
+
+.kaapaan-scope .form-select,
+.kaapaan-scope .form-input {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-family: inherit;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: white;
+  color: var(--text-main);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.kaapaan-scope .form-select:focus,
+.kaapaan-scope .form-input:focus {
+  border-color: var(--secondary);
+  box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.15);
+}
+
+.kaapaan-scope .custom-id-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.kaapaan-scope .transmitter-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 18px 0;
+}
+
+/* TELEMETRY METRICS GRID */
+.kaapaan-scope .telemetry-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.kaapaan-scope .telemetry-card {
+  background: var(--surface-subtle);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.kaapaan-scope .t-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.kaapaan-scope .t-value {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-main);
+  font-family: 'JetBrains Mono', monospace;
+  word-break: break-all;
+}
+
+.kaapaan-scope .status-banner {
+  margin-top: 15px;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  background: #fff8e1;
+  border-left: 4px solid #ffb300;
+  font-size: 13px;
+  font-weight: 600;
+  color: #5d4037;
+}
+
+/* BADGES */
+.kaapaan-scope .badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.kaapaan-scope .badge-pulse {
+  background: #e0e0e0;
+  color: #424242;
+}
+
+.kaapaan-scope .badge-pulse.live {
+  background: #00e676;
+  color: #004d40;
+  box-shadow: 0 0 10px rgba(0, 230, 118, 0.5);
+  animation: kaapaanPulse 1.5s infinite;
+}
+
+/* TRAFFIC CONTROL & ROUTE TELEMETRY */
+.kaapaan-scope .junction-box {
+  margin: 14px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.kaapaan-scope .junction-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.kaapaan-scope .route-telemetry-box {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: white;
+  padding: 18px 22px;
+  border-radius: var(--radius-md);
+  margin: 16px 0;
+  box-shadow: var(--shadow-md);
+}
+
+.kaapaan-scope .route-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.kaapaan-scope .metric-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #94a3b8;
+}
+
+.kaapaan-scope .metric-value {
+  font-size: 24px;
+  font-weight: 800;
+  color: #38bdf8;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.kaapaan-scope .status-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  width: fit-content;
+}
+
+.kaapaan-scope .status-badge.normal {
+  background: #0284c7;
+  color: white;
+}
+
+.kaapaan-scope .status-badge.approaching {
+  background: #ea580c;
+  color: white;
+  animation: kaapaanPulse 1.2s infinite;
+}
+
+.kaapaan-scope .status-badge.imminent {
+  background: #dc2626;
+  color: white;
+  animation: kaapaanPulse 0.7s infinite;
+}
+
+.kaapaan-scope .section-sub-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0 10px;
+}
+
+.kaapaan-scope .section-sub-header h3 {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.kaapaan-scope .units-count {
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--surface-subtle);
+  padding: 3px 10px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+/* VEHICLES GRID */
+.kaapaan-scope .vehicles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.kaapaan-scope .vehicle-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.kaapaan-scope .vehicle-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.kaapaan-scope .vehicle-card.selected-route-card {
+  border-color: var(--secondary);
+  background: #f0f9ff;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.2);
+}
+
+.kaapaan-scope .vehicle-card.amb001 { border-left: 5px solid #ef4444; }
+.kaapaan-scope .vehicle-card.amb002 { border-left: 5px solid #3b82f6; }
+.kaapaan-scope .vehicle-card.amb003 { border-left: 5px solid #10b981; }
+
+.kaapaan-scope .vehicle-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+  margin-bottom: 10px;
+}
+
+.kaapaan-scope .vehicle-header h3 {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.kaapaan-scope .vehicle-body {
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.kaapaan-scope .vehicle-body p {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px dashed #f1f5f9;
+  padding-bottom: 2px;
+}
+
+.kaapaan-scope .vehicle-badge {
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.kaapaan-scope .vehicle-badge.active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.kaapaan-scope .empty-state-card {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 30px 20px;
+  background: var(--surface-subtle);
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+}
+
+.kaapaan-scope .empty-icon {
+  font-size: 36px;
+  margin-bottom: 8px;
+}
+
+/* MAP */
+.kaapaan-scope .map-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.kaapaan-scope .map-title-wrap h2 {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.kaapaan-scope .map-sub {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.kaapaan-scope .map-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.kaapaan-scope #map-kaapaan {
+  height: 480px;
+  width: 100%;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  z-index: 1;
+}
+
+/* MODAL */
+.kaapaan-scope .modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 16px;
+}
+
+.kaapaan-scope .modal-dialog {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  max-width: 480px;
+  width: 100%;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  animation: kaapaanModalSlide 0.25s ease-out;
+}
+
+@keyframes kaapaanModalSlide {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.kaapaan-scope .modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-subtle);
+}
+
+.kaapaan-scope .modal-header h3 {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.kaapaan-scope .modal-close-btn {
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  color: var(--text-muted);
+  cursor: pointer;
+  line-height: 1;
+}
+
+.kaapaan-scope .modal-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.kaapaan-scope .modal-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.kaapaan-scope .qr-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+  background: white;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  margin: 0 auto;
+}
+
+.kaapaan-scope .copy-input-group {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.kaapaan-scope .troubleshoot-step {
+  background: var(--surface-subtle);
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  font-size: 13px;
+}
+
+.kaapaan-scope .troubleshoot-step strong {
+  display: block;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+
+.kaapaan-scope .troubleshoot-step ol {
+  padding-left: 20px;
+  margin-top: 4px;
+}
+
+/* ALERTS */
+.kaapaan-scope .alert-box {
+  display: flex;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  margin: 14px 0;
+  font-size: 13px;
+}
+
+.kaapaan-scope .alert-box.warning-alert {
+  background: var(--warning-light);
+  border: 1px solid #fed7aa;
+  color: #9a3412;
+}
+
+.kaapaan-scope .alert-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.kaapaan-scope .alert-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+@keyframes kaapaanPulse {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.03); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.kaapaan-scope .physical-signal-box {
+  padding: 16px;
+  border: 2px solid #16a34a;
+  border-radius: var(--radius-md);
+  background: #f0fdf4;
+}
+
+.kaapaan-scope .physical-signal-box .junction-controls {
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.kaapaan-scope .signal-location-readout {
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: white;
+  border: 1px solid #bbf7d0;
+  border-radius: var(--radius-sm);
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 12px;
+}
+
+.kaapaan-scope .signal-location-readout code {
+  font-family: 'JetBrains Mono', monospace;
+  color: #166534;
+  font-weight: 700;
+}
+
+.kaapaan-scope .role-login-box,
+.kaapaan-scope .role-locked-box {
+  margin-top: 16px;
+  padding: 18px;
+  border: 1px solid #dbe4ee;
+  border-radius: 16px;
+  background: #f8fafc;
+}
+
+.kaapaan-scope .role-login-title {
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.kaapaan-scope .role-login-hint {
+  margin: 14px 0 0;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.kaapaan-scope .role-locked-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: #ecfdf5;
+  border-color: #86efac;
+}
+
+.kaapaan-scope .role-locked-box span {
+  color: #166534;
+  font-size: 13px;
+}
+
+.kaapaan-scope .role-locked-badge {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+}

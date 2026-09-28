@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ambulancy — Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --red: #E8000D; --red-dark: #a30009; --red-glow: rgba(232,0,13,0.2);
+      --bg: #080808; --surface: #111; --surface2: #181818;
+      --border: #222; --text: #f0f0f0; --muted: #555; --white: #fff;
+      --green: #00e676; --orange: #ff9100; --blue: #2979ff;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+    /* ── Topbar ── */
+    .topbar {
+      height: 56px; background: var(--surface); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; padding: 0 20px; gap: 16px; flex-shrink: 0; z-index: 200;
+    }
+    .topbar-logo { font-family: 'Bebas Neue'; font-size: 22px; color: var(--red); letter-spacing: 2px; }
+    .topbar-badge {
+      font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+      background: var(--red); color: white; padding: 3px 10px; border-radius: 100px;
+    }
+    .topbar-spacer { flex: 1; }
+    .topbar-time { font-family: 'Bebas Neue'; font-size: 18px; color: var(--muted); letter-spacing: 1px; }
+    .btn-logout {
+      padding: 6px 14px; background: transparent; border: 1px solid var(--border);
+      color: var(--muted); border-radius: 6px; font-size: 12px; cursor: pointer;
+      transition: all 0.2s; text-decoration: none; display: flex; align-items: center;
+    }
+    .btn-logout:hover { border-color: var(--red); color: var(--red); }
+
+    /* ── Layout ── */
+    .main { flex: 1; display: flex; overflow: hidden; }
+
+    /* ── Left panel ── */
+    .panel {
+      width: 340px; background: var(--surface); border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; overflow: hidden; flex-shrink: 0;
+    }
+
+    /* Stats bar */
+    .stats-bar {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      border-bottom: 1px solid var(--border); flex-shrink: 0;
+    }
+    .stat-cell {
+      padding: 16px 12px; text-align: center; border-right: 1px solid var(--border);
+    }
+    .stat-cell:last-child { border-right: none; }
+    .stat-val { font-family: 'Bebas Neue'; font-size: 36px; line-height: 1; }
+    .stat-val.total { color: var(--text); }
+    .stat-val.active { color: var(--green); }
+    .stat-val.emergency { color: var(--red); }
+    .stat-lbl { font-size: 10px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; margin-top: 2px; }
+
+    /* Driver list */
+    .panel-title {
+      padding: 14px 16px; font-size: 10px; font-weight: 600; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .driver-list { flex: 1; overflow-y: auto; }
+    .driver-list::-webkit-scrollbar { width: 4px; }
+    .driver-list::-webkit-scrollbar-track { background: transparent; }
+    .driver-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .driver-row {
+      display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+      border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.15s;
+    }
+    .driver-row:hover { background: var(--surface2); }
+    .driver-row.emergency-row { background: rgba(232,0,13,0.06); animation: row-pulse 1s infinite; }
+    @keyframes row-pulse { 0%,100%{background:rgba(232,0,13,0.06)} 50%{background:rgba(232,0,13,0.12)} }
+
+    .driver-avatar {
+      width: 38px; height: 38px; border-radius: 50%; background: var(--surface2);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Bebas Neue'; font-size: 16px; flex-shrink: 0;
+      border: 2px solid var(--border);
+    }
+    .driver-avatar.emergency { border-color: var(--red); color: var(--red); }
+    .driver-avatar.online    { border-color: var(--green); }
+    .driver-avatar.offline   { border-color: var(--muted); opacity: 0.5; }
+
+    .driver-info { flex: 1; min-width: 0; }
+    .driver-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .driver-sub  { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    .status-badge {
+      font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+      padding: 3px 8px; border-radius: 100px; flex-shrink: 0;
+    }
+    .status-badge.online    { background: rgba(0,230,118,0.15); color: var(--green); }
+    .status-badge.offline   { background: rgba(85,85,85,0.2);   color: var(--muted); }
+    .status-badge.emergency { background: rgba(232,0,13,0.2);   color: var(--red);   }
+
+    /* ── Map ── */
+    #map { flex: 1; }
+
+    /* ── Emergency alert popup ── */
+    .alert-popup {
+      display: none; position: fixed; top: 72px; right: 20px; z-index: 9999;
+      background: var(--surface); border: 2px solid var(--red); border-radius: 12px;
+      padding: 20px 24px; min-width: 300px; max-width: 360px;
+      box-shadow: 0 8px 40px rgba(232,0,13,0.3);
+      animation: slide-in 0.3s ease;
+    }
+    .alert-popup.show { display: block; }
+    @keyframes slide-in { from{transform:translateX(20px);opacity:0} to{transform:none;opacity:1} }
+    .alert-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .alert-icon { font-size: 24px; animation: spin 0.5s ease; }
+    @keyframes spin { from{transform:rotate(-20deg)} to{transform:none} }
+    .alert-title { font-family: 'Bebas Neue'; font-size: 20px; color: var(--red); letter-spacing: 1px; }
+    .alert-body { font-size: 13px; color: var(--text); line-height: 1.6; }
+    .alert-body strong { color: var(--white); }
+
+    .alert-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+
+    .btn-forward {
+      width: 100%; padding: 10px; background: rgba(41,121,255,0.15);
+      border: 1px solid var(--blue); color: var(--blue); border-radius: 6px;
+      font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;
+      letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .btn-forward:hover { background: var(--blue); color: white; }
+    .btn-forward:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-forward.forwarded { background: rgba(0,230,118,0.15); border-color: var(--green); color: var(--green); }
+
+    .alert-close {
+      width: 100%; padding: 8px; background: rgba(232,0,13,0.15);
+      border: 1px solid var(--red); color: var(--red); border-radius: 6px;
+      font-size: 12px; font-weight: 600; cursor: pointer; transition: background 0.2s;
+    }
+    .alert-close:hover { background: var(--red); color: white; }
+
+    /* ── Forward toast ── */
+    .toast {
+      display: none; position: fixed; bottom: 24px; right: 20px; z-index: 9999;
+      background: var(--green); color: #000; border-radius: 8px;
+      padding: 12px 20px; font-size: 13px; font-weight: 600;
+      box-shadow: 0 4px 20px rgba(0,230,118,0.3);
+      animation: slide-in 0.3s ease;
+    }
+    .toast.show { display: block; }
+  </style>
+</head>
+<body>
+
+<!-- ── Emergency alert sound ─────────────────────────────────────────────────
+     Place your alert MP3 at:  static/sounds/alert.mp3
+     Free sounds: https://mixkit.co/free-sound-effects/alarm/
+-->
+<audio id="emergencySound" src="/static/sounds/alert.mp3" preload="auto"></audio>
+
+<!-- Emergency alert popup -->
+<div class="alert-popup" id="alertPopup">
+  <div class="alert-header">
+    <span class="alert-icon">🚨</span>
+    <div class="alert-title">EMERGENCY ALERT</div>
+  </div>
+  <div class="alert-body" id="alertBody">—</div>
+  <div class="alert-actions">
+    <button class="btn-forward" id="btnForward" onclick="forwardToControlRoom()">
+      📡 Forward to Control Room
+    </button>
+    <button class="alert-close" onclick="dismissAlert()">Dismiss</button>
+  </div>
+</div>
+
+<!-- Forward success toast -->
+<div class="toast" id="forwardToast">✅ Emergency forwarded to Control Room</div>
+
+<!-- Topbar -->
+<div class="topbar">
+  <div class="topbar-logo">🚑 AMBULANCY</div>
+  <div class="topbar-badge">Admin</div>
+  <div class="topbar-spacer"></div>
+  <div class="topbar-time" id="clock">—</div>
+  <a href="/logout" class="btn-logout">Logout</a>
+</div>
+
+<!-- Main -->
+<div class="main">
+
+  <!-- Left panel -->
+  <div class="panel">
+
+    <!-- Stats -->
+    <div class="stats-bar">
+      <div class="stat-cell">
+        <div class="stat-val total" id="statTotal">{{ stats.total }}</div>
+        <div class="stat-lbl">Total</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-val active" id="statActive">{{ stats.active }}</div>
+        <div class="stat-lbl">Active</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-val emergency" id="statEmergency">{{ stats.emergency }}</div>
+        <div class="stat-lbl">Emergency</div>
+      </div>
+    </div>
+
+    <div class="panel-title">Live Fleet</div>
+
+    <!-- Driver list -->
+    <div class="driver-list" id="driverList">
+      {% for d in drivers %}
+      <div class="driver-row {% if d.status == 'emergency' %}emergency-row{% endif %}"
+           id="row-{{ d._id }}" onclick="focusDriver('{{ d._id }}')">
+        <div class="driver-avatar {{ d.status or 'offline' }}">{{ d.name[0] }}</div>
+        <div class="driver-info">
+          <div class="driver-name">{{ d.name }}</div>
+          <div class="driver-sub">{{ d.vehicle_no }} · {{ d.hospital }}</div>
+        </div>
+        <div class="status-badge {{ d.status or 'offline' }}">{{ (d.status or 'offline').upper() }}</div>
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+
+  <!-- Map -->
+  <div id="map"></div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js"></script>
+<script>
+  // ── Audio unlock (browsers block autoplay until first user interaction) ───
+  const emergencySound = document.getElementById("emergencySound");
+  let audioUnlocked = false;
+
+  document.addEventListener("click", function unlockAudio() {
+    if (audioUnlocked) return;
+    emergencySound.play().then(() => {
+      emergencySound.pause();
+      emergencySound.currentTime = 0;
+      audioUnlocked = true;
+    }).catch(() => {});
+    document.removeEventListener("click", unlockAudio);
+  }, { once: true });
+
+  function playEmergencySound() {
+    emergencySound.currentTime = 0;
+    emergencySound.play().catch(e => console.warn("Audio play blocked:", e));
+  }
+
+  function stopEmergencySound() {
+    emergencySound.pause();
+    emergencySound.currentTime = 0;
+  }
+
+  // ── Clock ─────────────────────────────────────────────────────────────────
+  function updateClock() {
+    const now = new Date();
+    document.getElementById("clock").textContent =
+      now.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  }
+  setInterval(updateClock, 1000); updateClock();
+
+  // ── Map ───────────────────────────────────────────────────────────────────
+  const map = L.map("map").setView([13.0827, 80.2707], 12);
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+    attribution: "© CartoDB", maxZoom: 19
+  }).addTo(map);
+
+  // ── Driver markers ────────────────────────────────────────────────────────
+  const markers = {};
+  const drivers = {};
+
+  function makeIcon(status) {
+    const color = status === "emergency" ? "#E8000D" : status === "online" ? "#00e676" : "#555";
+    const emoji = status === "emergency" ? "🚨" : "🚑";
+    return L.divIcon({
+      html: `<div style="
+        width:38px;height:38px;background:${color};border-radius:50%;
+        display:flex;align-items:center;justify-content:center;font-size:18px;
+        border:3px solid white;box-shadow:0 2px 12px rgba(0,0,0,0.6);
+        ${status === 'emergency' ? 'animation:pulse-marker 0.7s infinite;' : ''}
+      ">${emoji}</div>`,
+      className: "", iconSize: [38, 38], iconAnchor: [19, 19]
+    });
+  }
+
+  const style = document.createElement("style");
+  style.textContent = `@keyframes pulse-marker{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}`;
+  document.head.appendChild(style);
+
+  function updateDriver(d) {
+    drivers[d.id] = d;
+    const hasLocation = d.lat && d.lng;
+
+    if (hasLocation) {
+      if (markers[d.id]) {
+        markers[d.id].setLatLng([d.lat, d.lng]).setIcon(makeIcon(d.status));
+      } else {
+        markers[d.id] = L.marker([d.lat, d.lng], { icon: makeIcon(d.status) })
+          .bindPopup(`<b>${d.name}</b><br>${d.vehicle}<br>${d.hospital}`)
+          .addTo(map);
+      }
+    }
+
+    const row = document.getElementById("row-" + d.id);
+    if (row) {
+      row.className = "driver-row" + (d.status === "emergency" ? " emergency-row" : "");
+      const avatar = row.querySelector(".driver-avatar");
+      const badge  = row.querySelector(".status-badge");
+      avatar.className = `driver-avatar ${d.status}`;
+      badge.className  = `status-badge ${d.status}`;
+      badge.textContent = d.status.toUpperCase();
+    }
+
+    updateStats();
+  }
+
+  function updateStats() {
+    const all = Object.values(drivers);
+    document.getElementById("statTotal").textContent     = all.length;
+    document.getElementById("statActive").textContent    = all.filter(d => d.status === "online").length;
+    document.getElementById("statEmergency").textContent = all.filter(d => d.status === "emergency").length;
+  }
+
+  function focusDriver(id) {
+    const d = drivers[id];
+    if (d?.lat && d?.lng) map.setView([d.lat, d.lng], 15);
+  }
+
+  // ── Socket.IO ─────────────────────────────────────────────────────────────
+  const socket = io();
+  socket.emit("join_admin");
+
+  socket.on("all_drivers", data => data.forEach(updateDriver));
+  socket.on("driver_update", d => updateDriver(d));
+  socket.on("emergency_alert", d => {
+    playEmergencySound();   // 🔊 play alert sound
+    showAlert(d);
+    if (d.lat && d.lng) map.setView([d.lat, d.lng], 15);
+  });
+
+  // ── Emergency alert popup ─────────────────────────────────────────────────
+  let currentAlert = null;
+  let alertTimeout;
+
+  function showAlert(d) {
+    currentAlert = d;
+    document.getElementById("alertBody").innerHTML =
+      `<strong>${d.name}</strong> (${d.vehicle}) has activated emergency mode.<br>
+       ${d.lat ? `Location: ${(+d.lat).toFixed(4)}, ${(+d.lng).toFixed(4)}` : "Location unavailable"}`;
+
+    const btn = document.getElementById("btnForward");
+    btn.disabled = false;
+    btn.className = "btn-forward";
+    btn.innerHTML = "📡 Forward to Control Room";
+
+    document.getElementById("alertPopup").classList.add("show");
+    clearTimeout(alertTimeout);
+    alertTimeout = setTimeout(dismissAlert, 15000);
+  }
+
+  function dismissAlert() {
+    document.getElementById("alertPopup").classList.remove("show");
+    stopEmergencySound();   // 🔇 stop sound when dismissed
+    currentAlert = null;
+  }
+
+  // ── Forward to Control Room ───────────────────────────────────────────────
+  function forwardToControlRoom() {
+    if (!currentAlert) return;
+
+    socket.emit("forward_to_controlroom", currentAlert);
+
+    const btn = document.getElementById("btnForward");
+    btn.disabled = true;
+    btn.className = "btn-forward forwarded";
+    btn.innerHTML = "✅ Forwarded!";
+
+    // Show toast
+    const toast = document.getElementById("forwardToast");
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 3000);
+
+    // Auto-dismiss alert after short delay
+    setTimeout(dismissAlert, 2000);
+  }
+
+  // ── Demo fallback markers ─────────────────────────────────────────────────
+  setTimeout(() => {
+    const allDrivers = Object.values(drivers);
+    if (allDrivers.every(d => !d.lat)) {
+      const sample = [
+        { id: "sample1", name: "Ravi Kumar",  vehicle: "TN01AB1234", hospital: "Apollo",  status: "online",  lat: 13.0827, lng: 80.2707 },
+        { id: "sample2", name: "Priya Nair",  vehicle: "TN02CD5678", hospital: "Fortis",  status: "offline", lat: 13.0569, lng: 80.2425 },
+        { id: "sample3", name: "Arun Selvam", vehicle: "TN03EF9012", hospital: "MIOT",    status: "online",  lat: 13.1067, lng: 80.2206 },
+      ];
+      sample.forEach(d => {
+        if (!markers[d.id]) {
+          markers[d.id] = L.marker([d.lat, d.lng], { icon: makeIcon(d.status) })
+            .bindPopup(`<b>${d.name}</b><br>${d.vehicle}<br>${d.hospital}`)
+            .addTo(map);
+        }
+      });
+    }
+  }, 3000);
+</script>
+</body>
+</html>

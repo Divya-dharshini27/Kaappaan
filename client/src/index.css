@@ -1,0 +1,99 @@
+/* ======================================================
+   GLOBAL STYLES & UNIFIED PORTAL SWITCHER
+   ====================================================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  font-family: 'DM Sans', 'Inter', -apple-system, sans-serif;
+  background-color: #0a0a0a;
+}
+
+/* TOP UNIFIED PORTAL BAR */
+.unified-portal-nav {
+  height: 44px;
+  background: #000000;
+  border-bottom: 1px solid #1f1f1f;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  z-index: 10000;
+  position: relative;
+}
+
+.portal-switch-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.portal-switch-btn {
+  padding: 5px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 6px;
+  border: 1px solid #333333;
+  background: #141414;
+  color: #888888;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.portal-switch-btn:hover {
+  color: #ffffff;
+  border-color: #555555;
+}
+
+.portal-switch-btn.active.ambulancy-active {
+  background: #E8000D;
+  border-color: #E8000D;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(232, 0, 13, 0.4);
+}
+
+.portal-switch-btn.active.kaapaan-active {
+  background: #1565c0;
+  border-color: #1565c0;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(21, 101, 192, 0.4);
+}
+
+.portal-status-meta {
+  font-size: 11px;
+  color: #666666;
+  font-family: 'JetBrains Mono', monospace;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.portal-status-meta .live-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #00e676;
+}
+
+.portal-status-meta .live-dot {
+  width: 6px;
+  height: 6px;
+  background: #00e676;
+  border-radius: 50%;
+  animation: portalPulse 1.5s infinite;
+}
+
+@keyframes portalPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(0.8); }
+}

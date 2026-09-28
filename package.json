@@ -1,0 +1,11 @@
+{
+  "name": "kaapaan-unified-system",
+  "version": "2.0.0",
+  "description": "Unified KAAPAAN & Ambulancy Emergency Fleet & Traffic Prioritization System",
+  "scripts": {
+    "server": "node server/server.js",
+    "client": "npm --prefix client run dev",
+    "build": "npm --prefix client run build",
+    "start": "node server/server.js"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "ambulance-tracker",
+  "version": "1.0.0",
+  "description": "KAAPAAN travelling-phone ambulance GPS demo with Node.js, WebSocket, and local traffic ESP32 control",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "public": "node public-server.js"
+  },
+  "keywords": [
+    "gps",
+    "tracker",
+    "ambulance",
+    "leaflet",
+    "osrm",
+    "mqtt",
+    "websockets"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "ws": "^8.17.0"
+  }
+}

@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ambulancy — Driver Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --red:#E8000D; --red-dark:#a30009; --red-glow:rgba(232,0,13,0.18);
+      --bg:#0a0a0a; --surface:#111; --surface2:#161616;
+      --border:#1f1f1f; --text:#f0f0f0; --muted:#666; --white:#fff;
+      --green:#22c55e; --yellow:#f59e0b; --blue:#3b82f6;
+    }
+    body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; display:flex; flex-direction:column; }
+
+    /* Topbar */
+    .topbar { background:var(--surface); border-bottom:1px solid var(--border); padding:0 24px; height:56px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:200; }
+    .topbar-brand { font-family:'Bebas Neue',sans-serif; font-size:22px; color:var(--red); letter-spacing:2px; }
+    .topbar-right { display:flex; align-items:center; gap:12px; }
+    .driver-chip { background:var(--bg); border:1px solid var(--border); border-radius:20px; padding:5px 14px; font-size:13px; }
+    .status-badge { padding:5px 14px; border-radius:20px; font-size:12px; font-weight:600; letter-spacing:1px; text-transform:uppercase; }
+    .status-online   { background:rgba(34,197,94,0.15);  color:var(--green); border:1px solid rgba(34,197,94,0.3); }
+    .status-emergency{ background:rgba(232,0,13,0.15);   color:var(--red);   border:1px solid rgba(232,0,13,0.3); animation:pill-pulse .8s ease-in-out infinite; }
+    .status-offline  { background:rgba(102,102,102,0.15);color:var(--muted); border:1px solid rgba(102,102,102,0.3); }
+    @keyframes pill-pulse { 0%,100%{box-shadow:0 0 0 0 var(--red-glow)} 50%{box-shadow:0 0 0 8px transparent} }
+    .btn-logout { background:transparent; border:1px solid var(--border); color:var(--muted); padding:5px 14px; border-radius:6px; font-family:'DM Sans',sans-serif; font-size:13px; cursor:pointer; transition:border-color .2s,color .2s; }
+    .btn-logout:hover { border-color:var(--red); color:var(--red); }
+
+    /* Layout */
+    .main { display:grid; grid-template-columns:380px 1fr; flex:1; height:calc(100vh - 56px); overflow:hidden; }
+
+    /* Sidebar */
+    .sidebar { background:var(--surface); border-right:1px solid var(--border); overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:12px; }
+    .card { background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:14px; }
+    .card-title { font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:10px; }
+
+    /* Location modes */
+    .loc-modes { display:flex; background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:3px; margin-bottom:10px; }
+    .loc-mode-btn { flex:1; padding:7px; border:none; background:transparent; color:var(--muted); font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600; cursor:pointer; border-radius:5px; transition:all .2s; }
+    .loc-mode-btn.active { background:var(--blue); color:#fff; }
+    .loc-coords { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px; }
+    .loc-coords input { background:var(--bg); border:1px solid var(--border); border-radius:6px; padding:8px 10px; color:var(--text); font-family:'DM Sans',sans-serif; font-size:13px; outline:none; transition:border-color .2s; width:100%; }
+    .loc-coords input:focus { border-color:var(--blue); }
+    .loc-coords input:read-only { color:var(--muted); cursor:not-allowed; }
+    .gps-status { font-size:11px; color:var(--muted); text-align:center; margin-bottom:8px; min-height:16px; }
+    .pin-hint { font-size:11px; color:var(--blue); text-align:center; margin-bottom:8px; display:none; }
+    .btn-gps { width:100%; padding:8px; background:rgba(59,130,246,0.15); border:1px solid rgba(59,130,246,0.3); color:var(--blue); border-radius:7px; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:background .2s; }
+    .btn-gps:hover { background:rgba(59,130,246,0.25); }
+    .btn-share-loc { width:100%; margin-top:8px; padding:9px; background:var(--blue); color:#fff; border:none; border-radius:7px; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:opacity .2s; }
+    .btn-share-loc:hover { opacity:.85; }
+
+    /* Hospital */
+    .hospital-search-wrap { position:relative; margin-bottom:8px; }
+    .hospital-search { width:100%; background:var(--bg); border:1px solid var(--border); border-radius:7px; padding:9px 34px 9px 12px; color:var(--text); font-family:'DM Sans',sans-serif; font-size:13px; outline:none; transition:border-color .2s; }
+    .hospital-search:focus { border-color:var(--red); }
+    .hospital-search-icon { position:absolute; right:10px; top:50%; transform:translateY(-50%); color:var(--muted); font-size:14px; pointer-events:none; }
+    .sort-note { font-size:11px; color:var(--muted); margin-bottom:6px; }
+    .hospital-list { display:flex; flex-direction:column; gap:5px; max-height:240px; overflow-y:auto; }
+    .hospital-item { background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:9px 11px; cursor:pointer; transition:border-color .2s,background .2s; display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
+    .hospital-item:hover { border-color:var(--red); background:rgba(232,0,13,0.05); }
+    .hospital-item.selected { border-color:var(--red); background:rgba(232,0,13,0.1); }
+    .hospital-name { font-size:13px; font-weight:600; color:var(--text); }
+    .hospital-addr { font-size:11px; color:var(--muted); margin-top:2px; line-height:1.4; }
+    .hospital-type { font-size:10px; color:var(--blue); margin-top:2px; }
+    .hospital-dist { font-size:12px; font-weight:700; color:var(--red); white-space:nowrap; flex-shrink:0; }
+    .hospital-dist.no-gps { color:var(--muted); font-weight:400; }
+    .loading-hospitals { text-align:center; color:var(--muted); font-size:13px; padding:16px 0; }
+    .selected-hosp-banner { background:rgba(232,0,13,0.1); border:1px solid rgba(232,0,13,0.3); border-radius:8px; padding:9px 12px; font-size:13px; font-weight:600; color:var(--red); margin-top:8px; display:none; }
+    .btn-navigate { width:100%; margin-top:8px; padding:9px; background:var(--red); color:#fff; border:none; border-radius:7px; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:opacity .2s; display:none; }
+    .btn-navigate:hover { opacity:.85; }
+
+    /* Route info */
+    .route-card { background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:10px; margin-top:8px; display:none; }
+    .route-card.show { display:block; }
+    .route-stats { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .route-stat { text-align:center; }
+    .route-stat .val { font-family:'Bebas Neue',sans-serif; font-size:26px; color:var(--red); line-height:1; }
+    .route-stat .lbl { font-size:10px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; margin-top:2px; }
+    .btn-clear-route { width:100%; margin-top:8px; padding:7px; background:transparent; border:1px solid var(--border); color:var(--muted); border-radius:6px; font-size:12px; cursor:pointer; transition:all .2s; }
+    .btn-clear-route:hover { border-color:var(--red); color:var(--red); }
+
+    /* Status */
+    .status-btns { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+    .status-btn { padding:9px 6px; border-radius:8px; border:1px solid var(--border); background:var(--bg); color:var(--muted); font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600; cursor:pointer; text-align:center; transition:all .2s; }
+    .status-btn.active-online    { background:rgba(34,197,94,0.15);  border-color:var(--green); color:var(--green); }
+    .status-btn.active-emergency { background:rgba(232,0,13,0.2);    border-color:var(--red);   color:var(--red); animation:emergency-btn-pulse 1s infinite; }
+    .status-btn.active-offline   { background:rgba(102,102,102,0.15);border-color:#444; color:var(--muted); }
+    @keyframes emergency-btn-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(232,0,13,0.4)} 50%{box-shadow:0 0 0 10px transparent} }
+
+    /* Info row */
+    .info-row { display:flex; justify-content:space-between; font-size:13px; padding:5px 0; border-bottom:1px solid var(--border); }
+    .info-row:last-child { border-bottom:none; }
+    .info-label { color:var(--muted); }
+    .info-val { font-weight:600; }
+
+    /* Map */
+    #map { flex:1; cursor:crosshair; }
+
+    /* Emergency overlay */
+    .emergency-overlay { display:none; position:fixed; inset:0; z-index:9998; background:rgba(232,0,13,0.08); pointer-events:none; animation:emer-flash .6s ease-in-out infinite; }
+    .emergency-overlay.show { display:block; }
+    @keyframes emer-flash { 0%,100%{opacity:0} 50%{opacity:1} }
+
+    /* Toast */
+    .toast { position:fixed; bottom:24px; right:24px; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:12px 18px; font-size:13px; z-index:9999; opacity:0; transform:translateY(10px); transition:opacity .3s,transform .3s; pointer-events:none; }
+    .toast.show { opacity:1; transform:translateY(0); }
+    .toast.success { border-color:var(--green); color:var(--green); }
+    .toast.error   { border-color:var(--red);   color:var(--red); }
+    .toast.info    { border-color:var(--blue);  color:var(--blue); }
+
+    /* Scrollbars */
+    .hospital-list::-webkit-scrollbar, .sidebar::-webkit-scrollbar { width:4px; }
+    .hospital-list::-webkit-scrollbar-track, .sidebar::-webkit-scrollbar-track { background:transparent; }
+    .hospital-list::-webkit-scrollbar-thumb, .sidebar::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
+
+    @media (max-width:900px) {
+      .main { grid-template-columns:1fr; grid-template-rows:auto 300px; height:auto; overflow:visible; }
+      #map { min-height:300px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="emergency-overlay" id="emergencyOverlay"></div>
+
+<!-- Topbar -->
+<div class="topbar">
+  <div class="topbar-brand">🚑 AMBULANCY</div>
+  <div class="topbar-right">
+    <div class="driver-chip">{{ driver.name }}</div>
+    <div class="status-badge status-offline" id="topbar-status">OFFLINE</div>
+    <button class="btn-logout" onclick="location.href='/logout'">Logout</button>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main">
+  <div class="sidebar">
+
+    <!-- Driver Info -->
+    <div class="card">
+      <div class="card-title">Driver Info</div>
+      <div class="info-row"><span class="info-label">Name</span><span class="info-val">{{ driver.name }}</span></div>
+      <div class="info-row"><span class="info-label">Vehicle</span><span class="info-val">{{ driver.vehicle_no }}</span></div>
+      <div class="info-row"><span class="info-label">Phone</span><span class="info-val">{{ driver.phone }}</span></div>
+      <div class="info-row"><span class="info-label">Hospital</span><span class="info-val" id="info-hospital">{{ driver.hospital or '—' }}</span></div>
+    </div>
+
+    <!-- Location Card -->
+    <div class="card">
+      <div class="card-title">Ambulance Location</div>
+      <div class="loc-modes">
+        <button class="loc-mode-btn active" id="btn-gps-mode"    onclick="setLocMode('gps')">📡 GPS Auto</button>
+        <button class="loc-mode-btn"        id="btn-manual-mode" onclick="setLocMode('manual')">📌 Pin on Map</button>
+      </div>
+      <div class="loc-coords">
+        <input type="number" id="inp-lat" placeholder="Latitude"  step="0.000001" readonly/>
+        <input type="number" id="inp-lng" placeholder="Longitude" step="0.000001" readonly/>
+      </div>
+      <div class="gps-status" id="gps-status">Click "Get My Location"</div>
+      <div class="pin-hint"   id="pin-hint">📌 Click anywhere on the map to pin your location</div>
+      <button class="btn-gps" id="btn-get-gps" onclick="startGPS()">📍 Get My Location</button>
+      <button class="btn-share-loc" onclick="shareLocation()">⬆ Share Location</button>
+    </div>
+
+    <!-- Nearby Hospitals -->
+    <div class="card">
+      <div class="card-title">Select Destination Hospital</div>
+      <div class="hospital-search-wrap">
+        <input class="hospital-search" id="hospital-search" placeholder="Search hospital…" oninput="filterHospitals(this.value)"/>
+        <span class="hospital-search-icon">🔍</span>
+      </div>
+      <div class="sort-note" id="sort-note">Share your location to find nearby hospitals</div>
+      <div class="hospital-list" id="hospital-list">
+        <div class="loading-hospitals">📍 Set your location first</div>
+      </div>
+      <div class="selected-hosp-banner" id="selected-banner">
+        ✅ Selected: <span id="selected-banner-name"></span>
+      </div>
+      <button class="btn-navigate" id="btn-navigate" onclick="navigateToSelected()">🗺 Show Shortest Route</button>
+    </div>
+
+    <!-- Route Info -->
+    <div class="card" id="route-card" style="display:none">
+      <div class="card-title">Shortest Route (OSRM)</div>
+      <div class="route-stats">
+        <div class="route-stat"><div class="val" id="route-dist">—</div><div class="lbl">Distance km</div></div>
+        <div class="route-stat"><div class="val" id="route-eta">—</div><div class="lbl">ETA min</div></div>
+      </div>
+      <button class="btn-clear-route" onclick="clearRoute()">✕ Clear Route</button>
+    </div>
+
+    <!-- Status -->
+    <div class="card">
+      <div class="card-title">Status Control</div>
+      <div class="status-btns">
+        <button class="status-btn active-offline" id="sbtn-offline"   onclick="setStatus('offline')">🔴 Offline</button>
+        <button class="status-btn"               id="sbtn-online"    onclick="setStatus('online')">🟢 Online</button>
+        <button class="status-btn"               id="sbtn-emergency" onclick="setStatus('emergency')">🚨 Emergency</button>
+      </div>
+    </div>
+
+  </div><!-- /sidebar -->
+
+  <div id="map"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js"></script>
+<script>
+/* ═══════════════════════════════════
+   State
+═══════════════════════════════════ */
+let currentLat = null, currentLng = null;
+let locMode    = 'gps';
+let gpsWatcher = null;
+let isPinMode  = false;
+let currentStatus   = '{{ driver.status or "offline" }}';
+let currentHospital = '{{ driver.hospital or "" }}';
+let selectedHospitalLatLng = null;
+let allHospitals = [];
+let map, ambulanceMarker, hospitalMarker, routeLayer;
+
+/* ═══════════════════════════════════
+   Socket
+═══════════════════════════════════ */
+const socket = io();
+socket.emit('driver_connected');
+
+/* ═══════════════════════════════════
+   Map init
+═══════════════════════════════════ */
+map = L.map('map').setView([13.0827, 80.2707], 13);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution:'© OpenStreetMap © CARTO', maxZoom:19
+}).addTo(map);
+
+const ambulanceIcon = L.divIcon({
+  html:`<div style="width:38px;height:38px;background:#E8000D;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;border:3px solid white;box-shadow:0 2px 10px rgba(0,0,0,.5);">🚑</div>`,
+  className:'', iconSize:[38,38], iconAnchor:[19,19]
+});
+const hospitalIcon = L.divIcon({
+  html:`<div style="width:32px;height:32px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;border:3px solid #E8000D;box-shadow:0 2px 10px rgba(0,0,0,.5);">🏥</div>`,
+  className:'', iconSize:[32,32], iconAnchor:[16,16]
+});
+
+/* Map click — pin mode or set destination */
+map.on('click', e => {
+  if (isPinMode) {
+    setAmbulanceLocation(e.latlng.lat, e.latlng.lng, true);
+  }
+});
+
+/* ═══════════════════════════════════
+   Location Mode
+═══════════════════════════════════ */
+function setLocMode(mode) {
+  locMode = mode;
+  document.getElementById('btn-gps-mode').classList.toggle('active', mode === 'gps');
+  document.getElementById('btn-manual-mode').classList.toggle('active', mode === 'manual');
+
+  const gpsBtn  = document.getElementById('btn-get-gps');
+  const pinHint = document.getElementById('pin-hint');
+  const gpsStatus = document.getElementById('gps-status');
+
+  if (mode === 'gps') {
+    isPinMode = false;
+    map.getContainer().style.cursor = 'grab';
+    gpsBtn.style.display  = 'block';
+    pinHint.style.display = 'none';
+    gpsStatus.textContent = 'Click "Get My Location"';
+    stopGPS();
+  } else {
+    isPinMode = true;
+    map.getContainer().style.cursor = 'crosshair';
+    gpsBtn.style.display  = 'none';
+    pinHint.style.display = 'block';
+    gpsStatus.textContent = '';
+    stopGPS();
+  }
+}
+
+function setAmbulanceLocation(lat, lng, fromPin = false) {
+  currentLat = lat; currentLng = lng;
+  document.getElementById('inp-lat').value = lat.toFixed(6);
+  document.getElementById('inp-lng').value = lng.toFixed(6);
+
+  if (!ambulanceMarker) {
+    ambulanceMarker = L.marker([lat, lng], {icon: ambulanceIcon})
+      .bindPopup(`<b>{{ driver.name }}</b><br>{{ driver.vehicle_no }}`).addTo(map);
+  } else {
+    ambulanceMarker.setLatLng([lat, lng]);
+  }
+  map.setView([lat, lng], 15);
+
+  if (fromPin) {
+    showToast('📌 Location pinned on map', 'info');
+    // After pinning, load live hospitals around this point
+    loadLiveHospitals(lat, lng);
+  }
+}
+
+/* ═══════════════════════════════════
+   GPS
+═══════════════════════════════════ */
+function startGPS() {
+  if (!navigator.geolocation) { showToast('GPS not supported', 'error'); return; }
+  document.getElementById('gps-status').textContent = '📡 Acquiring GPS…';
+  document.getElementById('btn-get-gps').disabled = true;
+
+  gpsWatcher = navigator.geolocation.watchPosition(
+    pos => {
+      const la = pos.coords.latitude, ln = pos.coords.longitude;
+      setAmbulanceLocation(la, ln);
+      document.getElementById('gps-status').textContent = `📍 GPS Active ±${Math.round(pos.coords.accuracy)}m`;
+      document.getElementById('btn-get-gps').disabled = false;
+      socket.emit('driver_location', {lat: la, lng: ln});
+      loadLiveHospitals(la, ln);
+    },
+    err => {
+      document.getElementById('gps-status').textContent = '⚠ GPS error: ' + err.message;
+      document.getElementById('btn-get-gps').disabled = false;
+      showToast('GPS failed — try Pin on Map mode', 'error');
+    },
+    {enableHighAccuracy: true, timeout: 10000, maximumAge: 5000}
+  );
+}
+
+function stopGPS() {
+  if (gpsWatcher !== null) { navigator.geolocation.clearWatch(gpsWatcher); gpsWatcher = null; }
+}
+
+function shareLocation() {
+  const la = parseFloat(document.getElementById('inp-lat').value);
+  const ln = parseFloat(document.getElementById('inp-lng').value);
+  if (isNaN(la) || isNaN(ln)) { showToast('Set your location first', 'error'); return; }
+  fetch('/driver/api/update-location', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({lat: la, lng: ln})
+  }).then(() => {
+    socket.emit('driver_location', {lat: la, lng: ln});
+    showToast('Location shared ✓', 'success');
+  });
+}
+
+/* ═══════════════════════════════════
+   Live Hospitals (OpenStreetMap)
+═══════════════════════════════════ */
+let hospitalsLoaded = false;
+
+function loadLiveHospitals(lat, lng) {
+  document.getElementById('sort-note').textContent = '🔍 Fetching nearby hospitals…';
+  document.getElementById('hospital-list').innerHTML = '<div class="loading-hospitals">Loading real hospitals nearby…</div>';
+
+  fetch(`/api/hospitals/live?lat=${lat}&lng=${lng}&radius=6000`)
+    .then(r => r.json())
+    .then(data => {
+      if (data.error) throw new Error(data.error);
+      allHospitals = data;
+      hospitalsLoaded = true;
+      document.getElementById('sort-note').textContent = `✅ ${data.length} hospitals found nearby (sorted by distance)`;
+      renderHospitals(allHospitals);
+    })
+    .catch(err => {
+      document.getElementById('sort-note').textContent = 'Failed to load live hospitals';
+      document.getElementById('hospital-list').innerHTML = '<div class="loading-hospitals">⚠ Could not reach map server</div>';
+    });
+}
+
+function filterHospitals(query) {
+  if (!query) { renderHospitals(allHospitals); return; }
+  const q = query.toLowerCase();
+  renderHospitals(allHospitals.filter(h =>
+    h.name.toLowerCase().includes(q) || (h.address||'').toLowerCase().includes(q)
+  ));
+}
+
+function renderHospitals(list) {
+  const el = document.getElementById('hospital-list');
+  if (!list.length) { el.innerHTML = '<div class="loading-hospitals">No hospitals found</div>'; return; }
+  el.innerHTML = list.map(h => {
+    const distHtml = h.distance_km !== undefined
+      ? `<div class="hospital-dist">${h.distance_km} km</div>`
+      : `<div class="hospital-dist no-gps">—</div>`;
+    const sel = h.name === currentHospital ? 'selected' : '';
+    return `
+      <div class="hospital-item ${sel}" onclick="selectHospital('${h.name.replace(/'/g,"\\'")}', ${h.lat}, ${h.lng})">
+        <div>
+          <div class="hospital-name">${h.name}</div>
+          ${h.address ? `<div class="hospital-addr">${h.address}</div>` : ''}
+          <div class="hospital-type">${h.type || 'Hospital'}</div>
+        </div>
+        ${distHtml}
+      </div>`;
+  }).join('');
+}
+
+function selectHospital(name, lat, lng) {
+  currentHospital = name;
+  selectedHospitalLatLng = {lat, lng};
+
+  fetch('/driver/api/update-hospital', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({hospital: name})
+  }).then(r => r.json()).then(d => {
+    if (d.ok) {
+      document.getElementById('info-hospital').textContent = name;
+      document.getElementById('selected-banner-name').textContent = name;
+      document.getElementById('selected-banner').style.display = 'block';
+      document.getElementById('btn-navigate').style.display = 'block';
+      renderHospitals(allHospitals.filter(h =>
+        h.name.toLowerCase().includes(document.getElementById('hospital-search').value.toLowerCase())
+      ));
+
+      // Place hospital marker on map
+      if (hospitalMarker) map.removeLayer(hospitalMarker);
+      hospitalMarker = L.marker([lat, lng], {icon: hospitalIcon})
+        .bindPopup(`<b>${name}</b>`).addTo(map).openPopup();
+
+      showToast(`Hospital set: ${name}`, 'success');
+    }
+  });
+}
+
+/* ═══════════════════════════════════
+   Shortest Route (OSRM)
+═══════════════════════════════════ */
+async function navigateToSelected() {
+  if (!currentLat || !currentLng) { showToast('Set your location first', 'error'); return; }
+  if (!selectedHospitalLatLng)    { showToast('Select a hospital first', 'error'); return; }
+
+  showToast('🗺 Calculating shortest route…', 'info');
+
+  const {lat: dLat, lng: dLng} = selectedHospitalLatLng;
+  const url = `https://router.project-osrm.org/route/v1/driving/${currentLng},${currentLat};${dLng},${dLat}?overview=full&geometries=geojson`;
+
+  try {
+    const res  = await fetch(url);
+    const data = await res.json();
+    if (!data.routes?.length) { showToast('No route found', 'error'); return; }
+
+    const route = data.routes[0];
+    const dist  = (route.distance / 1000).toFixed(1);
+    const eta   = Math.ceil(route.duration / 60);
+
+    // Draw route
+    if (routeLayer) map.removeLayer(routeLayer);
+    routeLayer = L.geoJSON(route.geometry, {
+      style: {color:'#E8000D', weight:5, opacity:0.9}
+    }).addTo(map);
+    map.fitBounds(routeLayer.getBounds(), {padding:[40,40]});
+
+    // Show route info card
+    document.getElementById('route-dist').textContent = dist;
+    document.getElementById('route-eta').textContent  = eta;
+    document.getElementById('route-card').style.display = 'block';
+
+    showToast(`Route: ${dist} km, ~${eta} min`, 'success');
+  } catch(e) {
+    showToast('Routing failed — check internet connection', 'error');
+  }
+}
+
+function clearRoute() {
+  if (routeLayer)     { map.removeLayer(routeLayer);     routeLayer = null; }
+  if (hospitalMarker) { map.removeLayer(hospitalMarker); hospitalMarker = null; }
+  document.getElementById('route-card').style.display = 'none';
+  document.getElementById('btn-navigate').style.display = 'none';
+  document.getElementById('selected-banner').style.display = 'none';
+  currentHospital = '';
+  selectedHospitalLatLng = null;
+  document.getElementById('info-hospital').textContent = '—';
+  renderHospitals(allHospitals);
+}
+
+/* ═══════════════════════════════════
+   Status
+═══════════════════════════════════ */
+function setStatus(status) {
+  currentStatus = status;
+  ['offline','online','emergency'].forEach(s => {
+    document.getElementById(`sbtn-${s}`).className =
+      'status-btn' + (s === status ? ` active-${s}` : '');
+  });
+  const topbar  = document.getElementById('topbar-status');
+  const overlay = document.getElementById('emergencyOverlay');
+  topbar.className   = `status-badge status-${status}`;
+  topbar.textContent = status.toUpperCase();
+  overlay.classList.toggle('show', status === 'emergency');
+
+  fetch('/driver/api/update-status', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({status})
+  });
+  socket.emit('driver_status', {status});
+}
+
+/* ═══════════════════════════════════
+   Toast
+═══════════════════════════════════ */
+let toastTimer;
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+/* ═══════════════════════════════════
+   Init
+═══════════════════════════════════ */
+setStatus(currentStatus);
+setLocMode('gps');
+
+if (currentHospital) {
+  document.getElementById('selected-banner-name').textContent = currentHospital;
+  document.getElementById('selected-banner').style.display = 'block';
+}
+
+{% if driver.location and driver.location.lat and driver.location.lng %}
+const savedLat = {{ driver.location.lat | tojson }};
+const savedLng = {{ driver.location.lng | tojson }};
+setAmbulanceLocation(savedLat, savedLng);
+loadLiveHospitals(savedLat, savedLng);
+{% endif %}
+</script>
+</body>
+</html>

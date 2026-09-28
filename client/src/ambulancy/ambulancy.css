@@ -1,0 +1,1419 @@
+/* ====================================================================
+   AMBULANCY DARK THEME & DESIGN SYSTEM
+   ==================================================================== */
+:root {
+  --amb-red: #E8000D;
+  --amb-red-dark: #a30009;
+  --amb-red-glow: rgba(232, 0, 13, 0.18);
+  --amb-bg: #0a0a0a;
+  --amb-surface: #111111;
+  --amb-surface2: #161616;
+  --amb-border: #1f1f1f;
+  --amb-text: #f0f0f0;
+  --amb-muted: #666666;
+  --amb-white: #ffffff;
+  --amb-green: #22c55e;
+  --amb-yellow: #f59e0b;
+  --amb-blue: #3b82f6;
+  --amb-cyan: #00e5ff;
+}
+
+/* Base Ambulancy Scope */
+.ambulancy-scope {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--amb-bg);
+  color: var(--amb-text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+/* Dark Map Tile Filter without API key watermark */
+.ambulancy-scope .leaflet-tile {
+  filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.2) brightness(0.85);
+}
+
+.ambulancy-scope .leaflet-container {
+  background: #0a0a0a;
+}
+
+.ambulancy-scope *,
+.ambulancy-scope *::before,
+.ambulancy-scope *::after {
+  box-sizing: border-box;
+}
+
+/* ====================================================================
+   LOGIN SCREEN
+   ==================================================================== */
+.amb-login-container {
+  display: flex;
+  align-items: stretch;
+  min-height: calc(100vh - 44px);
+  overflow: hidden;
+  background: var(--amb-bg);
+}
+
+.amb-login-hero {
+  flex: 1;
+  background: var(--amb-red);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 60px;
+  position: relative;
+  overflow: hidden;
+}
+
+.amb-login-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 20px,
+    rgba(0, 0, 0, 0.06) 20px,
+    rgba(0, 0, 0, 0.06) 40px
+  );
+}
+
+.amb-hero-siren {
+  font-size: 96px;
+  margin-bottom: 20px;
+  animation: ambPulse 1.4s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes ambPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.75; transform: scale(0.96); }
+}
+
+.amb-hero-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 88px;
+  line-height: 0.9;
+  color: white;
+  letter-spacing: 2px;
+  position: relative;
+  z-index: 1;
+}
+
+.amb-hero-sub {
+  margin-top: 18px;
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.6;
+  max-width: 320px;
+  position: relative;
+  z-index: 1;
+}
+
+.amb-hero-badge {
+  margin-top: 40px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 100px;
+  padding: 8px 16px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: white;
+  position: relative;
+  z-index: 1;
+  width: fit-content;
+}
+
+.amb-dot {
+  width: 8px;
+  height: 8px;
+  background: #fff;
+  border-radius: 50%;
+  animation: ambBlink 1s step-end infinite;
+}
+
+@keyframes ambBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.amb-login-panel {
+  width: 460px;
+  background: var(--amb-surface);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 60px 48px;
+  position: relative;
+}
+
+.amb-login-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(to bottom, transparent, var(--amb-red), transparent);
+}
+
+.amb-login-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--amb-red);
+  margin-bottom: 12px;
+}
+
+.amb-login-heading {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 42px;
+  letter-spacing: 1px;
+  color: var(--amb-white);
+  margin-bottom: 36px;
+  line-height: 1;
+}
+
+.amb-role-tabs {
+  display: flex;
+  background: var(--amb-bg);
+  border: 1px solid var(--amb-border);
+  border-radius: 8px;
+  padding: 4px;
+  margin-bottom: 28px;
+  gap: 3px;
+}
+
+.amb-role-tab {
+  flex: 1;
+  padding: 10px 6px;
+  border: none;
+  background: transparent;
+  color: var(--amb-muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.amb-role-tab.active {
+  background: var(--amb-red);
+  color: white;
+}
+
+.amb-role-tab:hover:not(.active) {
+  color: var(--amb-text);
+}
+
+.amb-flash {
+  background: rgba(232, 0, 13, 0.12);
+  border: 1px solid var(--amb-red);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #ff6b6b;
+  margin-bottom: 20px;
+}
+
+.amb-form-group {
+  margin-bottom: 18px;
+}
+
+.amb-form-group label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--amb-muted);
+  margin-bottom: 7px;
+}
+
+.amb-form-group input {
+  width: 100%;
+  background: var(--amb-bg);
+  border: 1px solid var(--amb-border);
+  border-radius: 7px;
+  padding: 13px 16px;
+  color: var(--amb-text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.amb-form-group input:focus {
+  border-color: var(--amb-red);
+  box-shadow: 0 0 0 3px var(--amb-red-glow);
+}
+
+.amb-btn-login {
+  width: 100%;
+  margin-top: 8px;
+  padding: 14px;
+  background: var(--amb-red);
+  color: white;
+  border: none;
+  border-radius: 7px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.amb-btn-login:hover {
+  background: var(--amb-red-dark);
+}
+
+.amb-btn-login:active {
+  transform: scale(0.98);
+}
+
+.amb-footer-note {
+  margin-top: 32px;
+  font-size: 11px;
+  color: var(--amb-muted);
+  text-align: center;
+  line-height: 1.6;
+}
+
+/* ====================================================================
+   TOPBAR
+   ==================================================================== */
+.amb-topbar {
+  background: var(--amb-surface);
+  border-bottom: 1px solid var(--amb-border);
+  padding: 0 24px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+}
+
+.amb-topbar-brand {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  color: var(--amb-red);
+  letter-spacing: 2px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.amb-topbar-brand.blue-brand {
+  color: var(--amb-blue);
+}
+
+.amb-topbar-badge {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  background: var(--amb-red);
+  color: white;
+  padding: 3px 10px;
+  border-radius: 100px;
+}
+
+.amb-topbar-badge.blue-badge {
+  background: var(--amb-blue);
+}
+
+.amb-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.amb-topbar-time {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  color: var(--amb-muted);
+  letter-spacing: 1px;
+}
+
+.amb-driver-chip {
+  background: var(--amb-bg);
+  border: 1px solid var(--amb-border);
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 13px;
+}
+
+.amb-status-badge {
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.amb-status-online {
+  background: rgba(34, 197, 94, 0.15);
+  color: var(--amb-green);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.amb-status-emergency {
+  background: rgba(232, 0, 13, 0.15);
+  color: var(--amb-red);
+  border: 1px solid rgba(232, 0, 13, 0.3);
+  animation: ambPillPulse 0.8s ease-in-out infinite;
+}
+
+.amb-status-offline {
+  background: rgba(102, 102, 102, 0.15);
+  color: var(--amb-muted);
+  border: 1px solid rgba(102, 102, 102, 0.3);
+}
+
+@keyframes ambPillPulse {
+  0%, 100% { box-shadow: 0 0 0 0 var(--amb-red-glow); }
+  50% { box-shadow: 0 0 0 8px transparent; }
+}
+
+.amb-btn-logout {
+  background: transparent;
+  border: 1px solid var(--amb-border);
+  color: var(--amb-muted);
+  padding: 5px 14px;
+  border-radius: 6px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.amb-btn-logout:hover {
+  border-color: var(--amb-red);
+  color: var(--amb-red);
+}
+
+/* ====================================================================
+   DRIVER DASHBOARD LAYOUT & CARDS
+   ==================================================================== */
+.amb-driver-main {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  flex: 1;
+  height: calc(100vh - 100px);
+  overflow: hidden;
+}
+
+.amb-sidebar {
+  background: var(--amb-surface);
+  border-right: 1px solid var(--amb-border);
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.amb-card {
+  background: var(--amb-surface2);
+  border: 1px solid var(--amb-border);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.amb-card-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--amb-muted);
+  margin-bottom: 10px;
+}
+
+.amb-loc-modes {
+  display: flex;
+  background: var(--amb-bg);
+  border: 1px solid var(--amb-border);
+  border-radius: 8px;
+  padding: 3px;
+  margin-bottom: 10px;
+}
+
+.amb-loc-mode-btn {
+  flex: 1;
+  padding: 7px;
+  border: none;
+  background: transparent;
+  color: var(--amb-muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: all 0.2s;
+}
+
+.amb-loc-mode-btn.active {
+  background: var(--amb-blue);
+  color: #fff;
+}
+
+.amb-loc-coords {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.amb-loc-coords input {
+  background: var(--amb-bg);
+  border: 1px solid var(--amb-border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  color: var(--amb-text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  outline: none;
+  width: 100%;
+}
+
+.amb-loc-coords input:read-only {
+  color: var(--amb-muted);
+  cursor: not-allowed;
+}
+
+.amb-gps-status {
+  font-size: 11px;
+  color: var(--amb-muted);
+  text-align: center;
+  margin-bottom: 8px;
+  min-height: 16px;
+}
+
+.amb-pin-hint {
+  font-size: 11px;
+  color: var(--amb-blue);
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.amb-btn-gps {
+  width: 100%;
+  padding: 8px;
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: var(--amb-blue);
+  border-radius: 7px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.amb-btn-gps:hover {
+  background: rgba(59, 130, 246, 0.25);
+}
+
+.amb-btn-share-loc {
+  width: 100%;
+  margin-top: 8px;
+  padding: 9px;
+  background: var(--amb-blue);
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.amb-btn-share-loc:hover {
+  opacity: 0.85;
+}
+
+.amb-hospital-search-wrap {
+  position: relative;
+  margin-bottom: 8px;
+}
+
+.amb-hospital-search {
+  width: 100%;
+  background: var(--amb-bg);
+  border: 1px solid var(--amb-border);
+  border-radius: 7px;
+  padding: 9px 34px 9px 12px;
+  color: var(--amb-text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.amb-hospital-search:focus {
+  border-color: var(--amb-red);
+}
+
+.amb-hospital-search-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--amb-muted);
+  font-size: 14px;
+  pointer-events: none;
+}
+
+.amb-sort-note {
+  font-size: 11px;
+  color: var(--amb-muted);
+  margin-bottom: 6px;
+}
+
+.amb-hospital-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.amb-hospital-item {
+  background: var(--amb-bg);
+  border: 1px solid var(--amb-border);
+  border-radius: 8px;
+  padding: 9px 11px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.amb-hospital-item:hover {
+  border-color: var(--amb-red);
+  background: rgba(232, 0, 13, 0.05);
+}
+
+.amb-hospital-item.selected {
+  border-color: var(--amb-red);
+  background: rgba(232, 0, 13, 0.1);
+}
+
+.amb-hospital-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--amb-text);
+}
+
+.amb-hospital-addr {
+  font-size: 11px;
+  color: var(--amb-muted);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+.amb-hospital-type {
+  font-size: 10px;
+  color: var(--amb-blue);
+  margin-top: 2px;
+}
+
+.amb-hospital-dist {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--amb-red);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.amb-selected-hosp-banner {
+  background: rgba(232, 0, 13, 0.1);
+  border: 1px solid rgba(232, 0, 13, 0.3);
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--amb-red);
+  margin-top: 8px;
+}
+
+.amb-btn-navigate {
+  width: 100%;
+  margin-top: 8px;
+  padding: 9px;
+  background: var(--amb-red);
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.amb-btn-navigate:hover {
+  opacity: 0.85;
+}
+
+.amb-route-card {
+  background: var(--amb-bg);
+  border: 1px solid var(--amb-border);
+  border-radius: 8px;
+  padding: 10px;
+  margin-top: 8px;
+}
+
+.amb-route-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.amb-route-stat {
+  text-align: center;
+}
+
+.amb-route-stat .val {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 26px;
+  color: var(--amb-red);
+  line-height: 1;
+}
+
+.amb-route-stat .lbl {
+  font-size: 10px;
+  color: var(--amb-muted);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.amb-btn-clear-route {
+  width: 100%;
+  margin-top: 8px;
+  padding: 7px;
+  background: transparent;
+  border: 1px solid var(--amb-border);
+  color: var(--amb-muted);
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.amb-btn-clear-route:hover {
+  border-color: var(--amb-red);
+  color: var(--amb-red);
+}
+
+.amb-status-btns {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+
+.amb-status-btn {
+  padding: 9px 6px;
+  border-radius: 8px;
+  border: 1px solid var(--amb-border);
+  background: var(--amb-bg);
+  color: var(--amb-muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.amb-status-btn.active-online {
+  background: rgba(34, 197, 94, 0.15);
+  border-color: var(--amb-green);
+  color: var(--amb-green);
+}
+
+.amb-status-btn.active-emergency {
+  background: rgba(232, 0, 13, 0.2);
+  border-color: var(--amb-red);
+  color: var(--amb-red);
+  animation: ambEmerBtnPulse 1s infinite;
+}
+
+.amb-status-btn.active-offline {
+  background: rgba(102, 102, 102, 0.15);
+  border-color: #444;
+  color: var(--amb-muted);
+}
+
+@keyframes ambEmerBtnPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(232, 0, 13, 0.4); }
+  50% { box-shadow: 0 0 0 10px transparent; }
+}
+
+.amb-info-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--amb-border);
+}
+
+.amb-info-row:last-child {
+  border-bottom: none;
+}
+
+.amb-info-label {
+  color: var(--amb-muted);
+}
+
+.amb-info-val {
+  font-weight: 600;
+}
+
+.amb-emergency-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: rgba(232, 0, 13, 0.08);
+  pointer-events: none;
+  animation: ambEmerFlash 0.6s ease-in-out infinite;
+}
+
+@keyframes ambEmerFlash {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+/* Toast */
+.amb-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--amb-surface);
+  border: 1px solid var(--amb-border);
+  border-radius: 10px;
+  padding: 12px 18px;
+  font-size: 13px;
+  z-index: 9999;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+}
+
+.amb-toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.amb-toast.success { border-color: var(--amb-green); color: var(--amb-green); }
+.amb-toast.error { border-color: var(--amb-red); color: var(--amb-red); }
+.amb-toast.info { border-color: var(--amb-blue); color: var(--amb-blue); }
+
+/* ====================================================================
+   ADMIN & CONTROL ROOM PANELS
+   ==================================================================== */
+.amb-admin-panel {
+  width: 340px;
+  background: var(--amb-surface);
+  border-right: 1px solid var(--amb-border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.amb-control-panel {
+  width: 380px;
+  background: var(--amb-surface);
+  border-right: 1px solid var(--amb-border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.amb-stats-bar {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  border-bottom: 1px solid var(--amb-border);
+  flex-shrink: 0;
+}
+
+.amb-stats-bar.two-cols {
+  grid-template-columns: 1fr 1fr;
+}
+
+.amb-stat-cell {
+  padding: 16px 12px;
+  text-align: center;
+  border-right: 1px solid var(--amb-border);
+}
+
+.amb-stat-cell:last-child {
+  border-right: none;
+}
+
+.amb-stat-val {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 36px;
+  line-height: 1;
+}
+
+.amb-stat-val.total { color: var(--amb-text); }
+.amb-stat-val.active { color: var(--amb-green); }
+.amb-stat-val.emergency { color: var(--amb-red); }
+.amb-stat-val.blue { color: var(--amb-blue); }
+
+.amb-stat-lbl {
+  font-size: 10px;
+  color: var(--amb-muted);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.amb-panel-title {
+  padding: 14px 16px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--amb-muted);
+  border-bottom: 1px solid var(--amb-border);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.amb-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--amb-blue);
+  animation: ambBlink 1.2s infinite;
+}
+
+.amb-driver-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.amb-driver-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--amb-border);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.amb-driver-row:hover {
+  background: var(--amb-surface2);
+}
+
+.amb-driver-row.emergency-row {
+  background: rgba(232, 0, 13, 0.06);
+  animation: ambRowPulse 1s infinite;
+}
+
+@keyframes ambRowPulse {
+  0%, 100% { background: rgba(232, 0, 13, 0.06); }
+  50% { background: rgba(232, 0, 13, 0.12); }
+}
+
+.amb-driver-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--amb-surface2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 16px;
+  flex-shrink: 0;
+  border: 2px solid var(--amb-border);
+}
+
+.amb-driver-avatar.emergency { border-color: var(--amb-red); color: var(--amb-red); }
+.amb-driver-avatar.online { border-color: var(--amb-green); }
+.amb-driver-avatar.offline { border-color: var(--amb-muted); opacity: 0.5; }
+
+.amb-driver-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.amb-driver-name {
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.amb-driver-sub {
+  font-size: 11px;
+  color: var(--amb-muted);
+  margin-top: 2px;
+}
+
+/* Alert popup */
+.amb-alert-popup {
+  position: fixed;
+  top: 72px;
+  right: 20px;
+  z-index: 9999;
+  background: var(--amb-surface);
+  border: 2px solid var(--amb-red);
+  border-radius: 12px;
+  padding: 20px 24px;
+  min-width: 300px;
+  max-width: 360px;
+  box-shadow: 0 8px 40px rgba(232, 0, 13, 0.3);
+  animation: ambSlideIn 0.3s ease;
+}
+
+@keyframes ambSlideIn {
+  from { transform: translateX(20px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+.amb-alert-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.amb-alert-icon {
+  font-size: 24px;
+}
+
+.amb-alert-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  color: var(--amb-red);
+  letter-spacing: 1px;
+}
+
+.amb-alert-body {
+  font-size: 13px;
+  color: var(--amb-text);
+  line-height: 1.6;
+}
+
+.amb-alert-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.amb-btn-forward {
+  width: 100%;
+  padding: 10px;
+  background: rgba(41, 121, 255, 0.15);
+  border: 1px solid var(--amb-blue);
+  color: var(--amb-blue);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.amb-btn-forward:hover {
+  background: var(--amb-blue);
+  color: white;
+}
+
+.amb-btn-forward.forwarded {
+  background: rgba(0, 230, 118, 0.15);
+  border-color: var(--amb-green);
+  color: var(--amb-green);
+}
+
+.amb-alert-close {
+  width: 100%;
+  padding: 8px;
+  background: rgba(232, 0, 13, 0.15);
+  border: 1px solid var(--amb-red);
+  color: var(--amb-red);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.amb-alert-close:hover {
+  background: var(--amb-red);
+  color: white;
+}
+
+/* Control Room Tab Bar */
+.amb-tab-bar {
+  display: flex;
+  border-bottom: 1px solid var(--amb-border);
+  flex-shrink: 0;
+}
+
+.amb-tab-btn {
+  flex: 1;
+  padding: 11px 4px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--amb-muted);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.amb-tab-btn:hover {
+  color: var(--amb-text);
+}
+
+.amb-tab-btn.active {
+  color: var(--amb-blue);
+  border-bottom-color: var(--amb-blue);
+}
+
+.amb-tab-btn.active.led-tab {
+  color: var(--amb-yellow);
+  border-bottom-color: var(--amb-yellow);
+}
+
+.amb-tab-btn.active.lcd-tab {
+  color: var(--amb-cyan);
+  border-bottom-color: var(--amb-cyan);
+}
+
+/* Emergencies List */
+.amb-emergency-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.amb-emergency-card {
+  background: var(--amb-surface2);
+  border: 1px solid var(--amb-border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-left: 3px solid var(--amb-red);
+  animation: ambCardIn 0.4s ease;
+}
+
+@keyframes ambCardIn {
+  from { transform: translateY(-8px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+.amb-emergency-card:hover {
+  border-color: var(--amb-blue);
+  background: rgba(41, 121, 255, 0.05);
+}
+
+.amb-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.amb-card-name {
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.amb-card-name .badge-emergency {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: rgba(232, 0, 13, 0.2);
+  color: var(--amb-red);
+  padding: 2px 7px;
+  border-radius: 100px;
+}
+
+.amb-card-time {
+  font-size: 11px;
+  color: var(--amb-muted);
+}
+
+.amb-card-vehicle {
+  font-size: 12px;
+  color: var(--amb-muted);
+  margin-bottom: 6px;
+}
+
+.amb-card-location {
+  font-size: 11px;
+  color: var(--amb-blue);
+  font-family: monospace;
+}
+
+.amb-card-forwarded-by {
+  font-size: 11px;
+  color: var(--amb-muted);
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--amb-border);
+}
+
+.amb-empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--amb-muted);
+  text-align: center;
+  gap: 12px;
+  padding: 40px;
+}
+
+.amb-empty-icon {
+  font-size: 48px;
+  opacity: 0.3;
+}
+
+.amb-empty-text {
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* IoT Panels */
+.amb-iot-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 28px;
+  overflow-y: auto;
+}
+
+.amb-device-visual-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.amb-led-bulb {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #444, #1a1a1a);
+  border: 3px solid var(--amb-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 42px;
+  transition: all 0.4s ease;
+}
+
+.amb-led-bulb.on {
+  background: radial-gradient(circle at 35% 35%, #fff9c4, #ffd600);
+  border-color: var(--amb-yellow);
+  box-shadow: 0 0 30px rgba(255, 214, 0, 0.6), 0 0 60px rgba(255, 214, 0, 0.3);
+  animation: ambBulbPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes ambBulbPulse {
+  0%, 100% { box-shadow: 0 0 30px rgba(255, 214, 0, 0.6), 0 0 60px rgba(255, 214, 0, 0.3); }
+  50% { box-shadow: 0 0 50px rgba(255, 214, 0, 0.9), 0 0 100px rgba(255, 214, 0, 0.5); }
+}
+
+.amb-lcd-screen {
+  width: 260px;
+  background: #0a1a0a;
+  border: 3px solid #2a3a2a;
+  border-radius: 6px;
+  padding: 12px 14px;
+  font-family: monospace;
+  font-size: 11px;
+  line-height: 1.9;
+  color: #1a1a1a;
+  transition: all 0.4s ease;
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.8);
+}
+
+.amb-lcd-screen.on {
+  color: #00ff41;
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 255, 65, 0.2);
+}
+
+.amb-lcd-screen .lcd-row {
+  white-space: pre;
+  letter-spacing: 1px;
+}
+
+.amb-device-status-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  letter-spacing: 3px;
+  color: var(--amb-muted);
+  transition: color 0.3s;
+}
+
+.amb-device-status-text.on-yellow { color: var(--amb-yellow); }
+.amb-device-status-text.on-cyan { color: var(--amb-cyan); }
+
+.amb-device-info {
+  background: var(--amb-surface2);
+  border: 1px solid var(--amb-border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  width: 100%;
+  font-size: 12px;
+}
+
+.amb-device-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.amb-device-info-row:last-child {
+  margin-bottom: 0;
+}
+
+.amb-device-label {
+  color: var(--amb-muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.amb-device-value {
+  font-family: monospace;
+  font-size: 12px;
+  color: var(--amb-text);
+}
+
+.amb-conn-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 100px;
+}
+
+.amb-conn-badge.online { background: rgba(0, 230, 118, 0.15); color: var(--amb-green); }
+.amb-conn-badge.offline { background: rgba(85, 85, 85, 0.2); color: var(--amb-muted); }
+.amb-conn-badge.checking { background: rgba(255, 145, 0, 0.15); color: var(--amb-yellow); }
+
+.amb-iot-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.amb-btn-turn-off {
+  width: 100%;
+  padding: 13px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: rgba(232, 0, 13, 0.15);
+  border: 1px solid var(--amb-red);
+  color: var(--amb-red);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.amb-btn-turn-off:hover:not(:disabled) {
+  background: var(--amb-red);
+  color: white;
+}
+
+.amb-btn-turn-off:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.amb-btn-refresh {
+  width: 100%;
+  padding: 9px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: transparent;
+  border: 1px solid var(--amb-border);
+  color: var(--amb-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.amb-btn-refresh:hover {
+  border-color: var(--amb-blue);
+  color: var(--amb-blue);
+}
+
+.amb-iot-note {
+  font-size: 11px;
+  color: var(--amb-muted);
+  text-align: center;
+  line-height: 1.6;
+}
